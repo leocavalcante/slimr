@@ -1,0 +1,25 @@
+{
+    "name": "slimr/slimr",
+    "description": "Wire up dependencies, routes and hooks in your Slim application.",
+    "require": {
+        "slim/slim": "dev-master"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "~4.7@dev"
+    },
+    "license": "WTFPL",
+    "authors": [
+        {
+            "name": "leocavalcante",
+            "email": "lc@leocavalcante.com"
+        }
+    ],
+    "minimum-stability": "dev",
+    "autoload": {
+        "psr-4": {
+            "Slimr\\": "src/",
+            "Slimr\\Test\\": "tests/",
+            "Slimr\\Example\\": "example/src/"
+        }
+    }
+}
