@@ -52,10 +52,16 @@ class SlimrTest extends \PHPUnit_Framework_TestCase
 
     public function testMiddlewares()
     {
-        $middlewares = [
-            ['Slimr\Test\OneMiddleware']
+        $services = [
+            'one_service' => ['Slimr\Test\OneService']
         ];
 
+        $middlewares = [
+            ['Slimr\Test\OneMiddleware'],
+            ['Slimr\Test\TwoMiddleware', ['one_service']]
+        ];
+
+        $this->slimr->services($services);
         $this->slimr->middlewares($middlewares);
     }
 }

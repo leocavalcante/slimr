@@ -54,9 +54,9 @@ class Slimr implements SlimrInterface
                 continue;
             }
 
-            $this->slim->add(array_map(function($serviceName) {
+            $this->slim->add($middleware->newInstanceArgs(array_map(function($serviceName) {
                 return $this->slim->container[$serviceName];
-            }, $middlewareConfig[1]));
+            }, $middlewareConfig[1])));
         }
     }
 }
