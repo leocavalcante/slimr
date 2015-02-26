@@ -4,7 +4,8 @@ namespace Slimr;
 
 interface SlimrInterface
 {
-    public function wireServices(array $services);
-    public function wireRoutes(array $routes);
-    public function wireHooks(array $hooks);
+    public function middlewares(array $middlewares);
+    public function services(array $services);
+    public function routes(array $routes);
+    public function hooks(array $hooks);
 }

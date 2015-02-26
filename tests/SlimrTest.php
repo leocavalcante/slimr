@@ -24,14 +24,14 @@ class SlimrTest extends \PHPUnit_Framework_TestCase
         $this->slimr = new Slimr($this->app);
     }
 
-    public function testWireServices()
+    public function testServices()
     {
         $services = [
             'one_service' => ['Slimr\Test\OneService'],
             'two_service' => ['Slimr\Test\TwoService', ['one_service']]
         ];
 
-        $this->slimr->wireServices($services);
+        $this->slimr->services($services);
 
         $this->assertInstanceOf('Slimr\Test\OneService', $this->app->container['one_service']);
         $this->assertInstanceOf('Slimr\Test\TwoService', $this->app->container['two_service']);
@@ -39,14 +39,23 @@ class SlimrTest extends \PHPUnit_Framework_TestCase
         $this->assertSame($this->app->container['one_service'], $this->app->container['two_service']->getOneService());
     }
 
-    public function testWireRoutes()
+    public function testRoutes()
     {
         $routes = [
             'one_route' => ['get', '/one', 'one_controller', 'handleGet']
         ];
 
-        $this->slimr->wireRoutes($routes);
+        $this->slimr->routes($routes);
 
         $this->assertTrue($this->app->router()->hasNamedRoute('one_route'));
+    }
+
+    public function testMiddlewares()
+    {
+        $middlewares = [
+            ['Slimr\Test\OneMiddleware']
+        ];
+
+        $this->slimr->middlewares($middlewares);
     }
 }

@@ -13,7 +13,7 @@ class Slimr implements SlimrInterface
         $this->slim = $slim;
     }
 
-    public function wireServices(array $services)
+    public function services(array $services)
     {
         foreach ($services as $serviceName => $serviceConfig) {
             $this->slim->container->singleton($serviceName, function($container) use($serviceConfig) {
@@ -30,7 +30,7 @@ class Slimr implements SlimrInterface
         }
     }
 
-    public function wireRoutes(array $routes)
+    public function routes(array $routes)
     {
         foreach ($routes as $routeName => $routeConfig) {
             $this->slim->{$routeConfig[0]}($routeConfig[1], function() use($routeConfig) {
@@ -39,8 +39,24 @@ class Slimr implements SlimrInterface
         }
     }
 
-    public function wireHooks(array $hooks)
+    public function hooks(array $hooks)
     {
-        // TODO: Implement wireHooks() method.
+        // TODO: Implement hooks() method.
+    }
+
+    public function middlewares(array $middlewares)
+    {
+        foreach ($middlewares as $middlewareConfig) {
+            $middleware = new \ReflectionClass($middlewareConfig[0]);
+
+            if (empty($middlewareConfig[1])) {
+                $this->slim->add($middleware->newInstance());
+                continue;
+            }
+
+            $this->slim->add(array_map(function($serviceName) {
+                return $this->slim->container[$serviceName];
+            }, $middlewareConfig[1]));
+        }
     }
 }
