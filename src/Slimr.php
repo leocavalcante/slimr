@@ -2,6 +2,7 @@
 
 namespace Slimr;
 
+use Slim\Middleware;
 use Slim\Slim;
 
 class Slimr implements SlimrInterface
@@ -43,19 +44,26 @@ class Slimr implements SlimrInterface
             $middleware = new \ReflectionClass($middlewareConfig[0]);
 
             if (empty($middlewareConfig[1])) {
-                $this->slim->add($middleware->newInstance());
+                /**
+                 * @var Middleware $middlewareInstance
+                 */
+                $middlewareInstance = $middleware->newInstance();
+                $this->slim->add($middlewareInstance);
                 continue;
             }
 
-            $this->slim->add(
-                $middleware->newInstanceArgs(
-                    array_map(
-                        function($serviceName) {
-                            return $this->slim->container[$serviceName];
-                        }, $middlewareConfig[1]
-                    )
+            /**
+             * @var Middleware $middlewareInstance
+             */
+            $middlewareInstance = $middleware->newInstanceArgs(
+                array_map(
+                    function($serviceName) {
+                        return $this->slim->container[$serviceName];
+                    }, $middlewareConfig[1]
                 )
             );
+
+            $this->slim->add($middlewareInstance);
         }
 
         foreach ($this->hooks as $hook => $hookConfig) {
