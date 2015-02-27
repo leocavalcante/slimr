@@ -70,4 +70,29 @@ class SlimrTest extends \PHPUnit_Framework_TestCase
             ->services($services)
             ->run();
     }
+
+    /**
+     * @expectedException \Exception
+     * @expectedExceptionMessage It works
+     */
+    public function testHooks()
+    {
+        $hookName = 'one_hook';
+
+        $hooks = [
+            $hookName => ['one_service', 'oneMethod']
+        ];
+
+        $services = [
+            'one_service' => ['Slimr\Test\OneService']
+        ];
+
+        $this->slimr
+            ->services($services)
+            ->hooks($hooks)
+            ->run();
+
+        $this->assertArrayHasKey($hookName, $this->app->getHooks());
+        $this->app->applyHook($hookName);
+    }
 }

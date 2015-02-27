@@ -46,6 +46,10 @@ class Slimr implements SlimrInterface
             }, $middlewareConfig[1])));
         }
 
+        foreach ($this->hooks as $hook => $hookConfig) {
+            $this->slim->hook($hook, [$this->slim->container[$hookConfig[0]], $hookConfig[1]]);
+        }
+
         foreach ($this->routes as $routeName => $routeConfig) {
             $this->slim->{$routeConfig[0]}($routeConfig[1], function() use($routeConfig) {
                 $this->slim->container[$routeConfig[2]]->{$routeConfig[3]}($this->slim);
