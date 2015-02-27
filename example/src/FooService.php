@@ -8,4 +8,10 @@ class FooService
     {
         return strtoupper($str);
     }
+
+    public function hookMethod()
+    {
+        // never do that
+        echo 'Hook works';
+    }
 }
