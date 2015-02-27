@@ -5,8 +5,7 @@
         "slim/slim": "dev-master"
     },
     "require-dev": {
-        "phpunit/phpunit": "~4.7@dev",
-        "symfony/config": "3.0.*@dev"
+        "phpunit/phpunit": "~4.7@dev"
     },
     "license": "WTFPL",
     "authors": [
