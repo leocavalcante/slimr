@@ -31,7 +31,9 @@ class SlimrTest extends \PHPUnit_Framework_TestCase
             'two_service' => ['Slimr\Test\TwoService', ['one_service']]
         ];
 
-        $this->slimr->services($services);
+        $this->slimr
+            ->services($services)
+            ->run();
 
         $this->assertInstanceOf('Slimr\Test\OneService', $this->app->container['one_service']);
         $this->assertInstanceOf('Slimr\Test\TwoService', $this->app->container['two_service']);
@@ -45,7 +47,9 @@ class SlimrTest extends \PHPUnit_Framework_TestCase
             'one_route' => ['get', '/one', 'one_controller', 'handleGet']
         ];
 
-        $this->slimr->routes($routes);
+        $this->slimr
+            ->routes($routes)
+            ->run();
 
         $this->assertTrue($this->app->router()->hasNamedRoute('one_route'));
     }
@@ -56,12 +60,14 @@ class SlimrTest extends \PHPUnit_Framework_TestCase
             'one_service' => ['Slimr\Test\OneService']
         ];
 
-        $middlewares = [
+        $middleware = [
             ['Slimr\Test\OneMiddleware'],
             ['Slimr\Test\TwoMiddleware', ['one_service']]
         ];
 
-        $this->slimr->services($services);
-        $this->slimr->middlewares($middlewares);
+        $this->slimr
+            ->middleware($middleware)
+            ->services($services)
+            ->run();
     }
 }
