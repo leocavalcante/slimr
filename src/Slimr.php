@@ -20,17 +20,23 @@ class Slimr implements SlimrInterface
     public function wire()
     {
         foreach ($this->services as $serviceName => $serviceConfig) {
-            $this->slim->container->singleton($serviceName, function($container) use($serviceConfig) {
-                $service = new \ReflectionClass($serviceConfig[0]);
+            $this->slim->container->singleton(
+                $serviceName, function($container) use ($serviceConfig) {
+                    $service = new \ReflectionClass($serviceConfig[0]);
 
-                if (empty($serviceConfig[1])) {
-                    return $service->newInstance();
+                    if (empty($serviceConfig[1])) {
+                        return $service->newInstance();
+                    }
+
+                    return $service->newInstanceArgs(
+                        array_map(
+                            function($serviceName) use ($container) {
+                                return $container[$serviceName];
+                            }, $serviceConfig[1]
+                        )
+                    );
                 }
-
-                return $service->newInstanceArgs(array_map(function($serviceName) use($container) {
-                    return $container[$serviceName];
-                }, $serviceConfig[1]));
-            });
+            );
         }
 
         foreach ($this->middlewares as $middlewareConfig) {
@@ -41,9 +47,15 @@ class Slimr implements SlimrInterface
                 continue;
             }
 
-            $this->slim->add($middleware->newInstanceArgs(array_map(function($serviceName) {
-                return $this->slim->container[$serviceName];
-            }, $middlewareConfig[1])));
+            $this->slim->add(
+                $middleware->newInstanceArgs(
+                    array_map(
+                        function($serviceName) {
+                            return $this->slim->container[$serviceName];
+                        }, $middlewareConfig[1]
+                    )
+                )
+            );
         }
 
         foreach ($this->hooks as $hook => $hookConfig) {
@@ -51,7 +63,7 @@ class Slimr implements SlimrInterface
         }
 
         foreach ($this->routes as $routeName => $routeConfig) {
-            $this->slim->{$routeConfig[0]}($routeConfig[1], function() use($routeConfig) {
+            $this->slim->{$routeConfig[0]}($routeConfig[1], function() use ($routeConfig) {
                 $this->slim->container[$routeConfig[2]]->{$routeConfig[3]}($this->slim);
             })->name($routeName);
         }
