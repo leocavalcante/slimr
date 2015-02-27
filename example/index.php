@@ -2,13 +2,17 @@
 
 require __DIR__.'/../vendor/autoload.php';
 
-$app = new Slim\Slim();
+use Symfony\Component\Yaml\Yaml;
+use Slim\Slim;
+use Slimr\Slimr;
 
-(new \Slimr\Slimr($app))
-    ->middlewares(require(__DIR__ . '/app/middlewares.php'))
-    ->services(require(__DIR__.'/app/services.php'))
-    ->routes(require(__DIR__.'/app/routes.php'))
-    ->hooks(require(__DIR__.'/app/hooks.php'))
+$app = new Slim();
+
+(new Slimr($app))
+    ->middlewares(Yaml::parse(file_get_contents(__DIR__.'/app/middlewares.yml')))
+    ->services(Yaml::parse(file_get_contents(__DIR__.'/app/services.yml')))
+    ->routes(Yaml::parse(file_get_contents(__DIR__.'/app/routes.yml')))
+    ->hooks(Yaml::parse(file_get_contents(__DIR__.'/app/hooks.yml')))
     ->wire();
 
 $app->run();
