@@ -20,12 +20,19 @@ class Slimr implements SlimrInterface
 
     public function wire()
     {
-        foreach ($this->services as $serviceName => $serviceConfig) {
-            $this->slim->container->singleton(
-                $serviceName, function($container) use ($serviceConfig) {
-                    $service = new \ReflectionClass($serviceConfig[0]);
+        foreach ($this->services as $serviceConfig) {
+            if (count($serviceConfig) < 2) {
+                throw new \InvalidArgumentException('Service configuration must have at least a name and a class');
+            }
 
-                    if (empty($serviceConfig[1])) {
+            $serviceName = array_shift($serviceConfig);
+            $serviceClass = array_shift($serviceConfig);
+
+            $this->slim->container->singleton(
+                $serviceName, function($container) use ($serviceClass, $serviceConfig) {
+                    $service = new \ReflectionClass($serviceClass);
+
+                    if (empty($serviceConfig)) {
                         return $service->newInstance();
                     }
 
@@ -33,7 +40,7 @@ class Slimr implements SlimrInterface
                         array_map(
                             function($serviceName) use ($container) {
                                 return $container[$serviceName];
-                            }, $serviceConfig[1]
+                            }, $serviceConfig
                         )
                     );
                 }
@@ -41,9 +48,15 @@ class Slimr implements SlimrInterface
         }
 
         foreach ($this->middlewares as $middlewareConfig) {
-            $middleware = new \ReflectionClass($middlewareConfig[0]);
+            if (count($middlewareConfig) < 1) {
+                throw new \InvalidArgumentException('Middleware configuration must have at least a class');
+            }
 
-            if (empty($middlewareConfig[1])) {
+            $middlewareClass = array_shift($middlewareConfig);
+
+            $middleware = new \ReflectionClass($middlewareClass);
+
+            if (empty($middlewareConfig)) {
                 /**
                  * @var Middleware $middlewareInstance
                  */
@@ -59,21 +72,29 @@ class Slimr implements SlimrInterface
                 array_map(
                     function($serviceName) {
                         return $this->slim->container[$serviceName];
-                    }, $middlewareConfig[1]
+                    }, $middlewareConfig
                 )
             );
 
             $this->slim->add($middlewareInstance);
         }
 
-        foreach ($this->hooks as $hook => $hookConfig) {
-            $this->slim->hook($hook, [$this->slim->container[$hookConfig[0]], $hookConfig[1]]);
+        foreach ($this->hooks as $hookConfig) {
+            if (count($hookConfig) < 3) {
+                throw new \InvalidArgumentException('Hook configuration must have a name, an object and a method');
+            }
+
+            $this->slim->hook($hookConfig[0], [$this->slim->container[$hookConfig[1]], $hookConfig[2]]);
         }
 
-        foreach ($this->routes as $routeName => $routeConfig) {
-            $this->slim->{$routeConfig[0]}($routeConfig[1], function() use ($routeConfig) {
-                $this->slim->container[$routeConfig[2]]->{$routeConfig[3]}($this->slim);
-            })->name($routeName);
+        foreach ($this->routes as $routeConfig) {
+            if (count($routeConfig) < 5) {
+                throw new \InvalidArgumentException('Route configuration must have a name, a method, a pattern, a service name and a service method');
+            }
+
+            $this->slim->{$routeConfig[1]}($routeConfig[2], function() use ($routeConfig) {
+                $this->slim->container[$routeConfig[3]]->{$routeConfig[4]}($this->slim);
+            })->name($routeConfig[0]);
         }
     }
 

@@ -1,1 +1,1 @@
-slim.after.router: [foo_service, hookMethod]
+- [slim.after.router, foo_service, hookMethod]

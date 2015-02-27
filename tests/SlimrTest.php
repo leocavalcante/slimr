@@ -27,8 +27,8 @@ class SlimrTest extends \PHPUnit_Framework_TestCase
     public function testServices()
     {
         $services = [
-            'one_service' => ['Slimr\Test\OneService'],
-            'two_service' => ['Slimr\Test\TwoService', ['one_service']]
+            ['one_service', 'Slimr\Test\OneService'],
+            ['two_service', 'Slimr\Test\TwoService', 'one_service']
         ];
 
         $this->slimr
@@ -44,7 +44,7 @@ class SlimrTest extends \PHPUnit_Framework_TestCase
     public function testRoutes()
     {
         $routes = [
-            'one_route' => ['get', '/one', 'one_controller', 'handleGet']
+            ['one_route', 'get', '/one', 'one_controller', 'handleGet']
         ];
 
         $this->slimr
@@ -57,12 +57,12 @@ class SlimrTest extends \PHPUnit_Framework_TestCase
     public function testMiddlewares()
     {
         $services = [
-            'one_service' => ['Slimr\Test\OneService']
+            ['one_service', 'Slimr\Test\OneService']
         ];
 
         $middlewares = [
             ['Slimr\Test\OneMiddleware'],
-            ['Slimr\Test\TwoMiddleware', ['one_service']]
+            ['Slimr\Test\TwoMiddleware', 'one_service']
         ];
 
         $this->slimr
@@ -80,11 +80,11 @@ class SlimrTest extends \PHPUnit_Framework_TestCase
         $hookName = 'one_hook';
 
         $hooks = [
-            $hookName => ['one_service', 'oneMethod']
+            [$hookName, 'one_service', 'oneMethod']
         ];
 
         $services = [
-            'one_service' => ['Slimr\Test\OneService']
+            ['one_service', 'Slimr\Test\OneService']
         ];
 
         $this->slimr
