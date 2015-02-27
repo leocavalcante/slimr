@@ -7,7 +7,7 @@ use Slim\Slim;
 class Slimr implements SlimrInterface
 {
     private $slim;
-    private $middleware = [];
+    private $middlewares = [];
     private $services = [];
     private $routes = [];
     private $hooks = [];
@@ -17,7 +17,7 @@ class Slimr implements SlimrInterface
         $this->slim = $slim;
     }
 
-    public function run()
+    public function wire()
     {
         foreach ($this->services as $serviceName => $serviceConfig) {
             $this->slim->container->singleton($serviceName, function($container) use($serviceConfig) {
@@ -33,7 +33,7 @@ class Slimr implements SlimrInterface
             });
         }
 
-        foreach ($this->middleware as $middlewareConfig) {
+        foreach ($this->middlewares as $middlewareConfig) {
             $middleware = new \ReflectionClass($middlewareConfig[0]);
 
             if (empty($middlewareConfig[1])) {
@@ -57,9 +57,9 @@ class Slimr implements SlimrInterface
         }
     }
 
-    public function middleware(array $middleware)
+    public function middlewares(array $middlewares)
     {
-        $this->middleware = $middleware;
+        $this->middlewares = $middlewares;
         return $this;
     }
 

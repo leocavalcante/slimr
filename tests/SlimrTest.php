@@ -33,7 +33,7 @@ class SlimrTest extends \PHPUnit_Framework_TestCase
 
         $this->slimr
             ->services($services)
-            ->run();
+            ->wire();
 
         $this->assertInstanceOf('Slimr\Test\OneService', $this->app->container['one_service']);
         $this->assertInstanceOf('Slimr\Test\TwoService', $this->app->container['two_service']);
@@ -49,7 +49,7 @@ class SlimrTest extends \PHPUnit_Framework_TestCase
 
         $this->slimr
             ->routes($routes)
-            ->run();
+            ->wire();
 
         $this->assertTrue($this->app->router()->hasNamedRoute('one_route'));
     }
@@ -60,15 +60,15 @@ class SlimrTest extends \PHPUnit_Framework_TestCase
             'one_service' => ['Slimr\Test\OneService']
         ];
 
-        $middleware = [
+        $middlewares = [
             ['Slimr\Test\OneMiddleware'],
             ['Slimr\Test\TwoMiddleware', ['one_service']]
         ];
 
         $this->slimr
-            ->middleware($middleware)
+            ->middlewares($middlewares)
             ->services($services)
-            ->run();
+            ->wire();
     }
 
     /**
@@ -90,7 +90,7 @@ class SlimrTest extends \PHPUnit_Framework_TestCase
         $this->slimr
             ->services($services)
             ->hooks($hooks)
-            ->run();
+            ->wire();
 
         $this->assertArrayHasKey($hookName, $this->app->getHooks());
         $this->app->applyHook($hookName);

@@ -5,10 +5,10 @@ namespace Slimr;
 interface SlimrInterface
 {
     /**
-     * @param array $middleware
+     * @param array $middlewares
      * @return SlimrInterface
      */
-    public function middleware(array $middleware);
+    public function middlewares(array $middlewares);
 
     /**
      * @param array $services
@@ -28,5 +28,5 @@ interface SlimrInterface
      */
     public function hooks(array $hooks);
 
-    public function run();
+    public function wire();
 }
